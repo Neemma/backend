@@ -1,10 +1,12 @@
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const Memory = require('lowdb/adapters/Memory');
+const { Pool } = require('pg');
 
-const adapter = process.env.NODE_ENV === 'production' ? new Memory() : new FileSync('src/data/questions.json');
-const db = low(adapter);
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
-db.defaults({ questions: [] }).write();
-
-module.exports = db;
+module.exports = {
+    query: (text, params) => pool.query(text, params),
+};
