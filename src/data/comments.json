@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "questionId": 2,
+    "answerId": null,
+    "body": "Read documentation",
+    "createdAt": "2024-06-13T08:51:31.889Z",
+    "updatedAt": "2024-06-13T08:51:31.889Z"
+  },
+  {
+    "id": 2,
+    "questionId": null,
+    "answerId": 12,
+    "body": "TNo.. just no",
+    "createdAt": "2024-06-13T08:51:46.401Z",
+    "updatedAt": "2024-06-13T08:51:46.401Z"
+  },
+  {
+    "id": 3,
+    "questionId": null,
+    "answerId": 2,
+    "body": "TNo.. just no",
+    "createdAt": "2024-06-13T08:52:05.926Z",
+    "updatedAt": "2024-06-13T08:52:05.926Z"
+  }
+]
