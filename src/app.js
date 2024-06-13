@@ -12,9 +12,12 @@ app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
 app.use('/questions', questionRoutes);
 
-// Configure multer for file uploads
+// Configure multer for file uploads with size limits
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({
+    storage,
+    limits: { fileSize: 50 * 1024 * 1024 } // 50 MB limit
+});
 
 // Upload Image Endpoint
 app.post('/upload/image', upload.single('image'), async (req, res) => {
@@ -62,7 +65,14 @@ app.post('/upload/video', upload.single('video'), async (req, res) => {
     }
 });
 
-const port = process.env.PORT || 3000;
+app.use((err, req, res, next) => {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).send('File size exceeds the allowed limit.');
+    }
+    res.status(500).send(err.message);
+});
+
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
