@@ -1,10 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const questionRoutes = require('./routes/questions');
 const upload = require('./middlewares/upload');
 
 const app = express();
 
+app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
 app.use('/questions', questionRoutes);
 

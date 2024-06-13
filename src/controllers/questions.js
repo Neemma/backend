@@ -1,16 +1,14 @@
-const fs = require('fs');
-const questions = require('../data/questions.json');
-const writeQuestions = (data) => fs.writeFileSync('src/data/questions.json', JSON.stringify(data, null, 2));
+const db = require('../db');
 
-// Helper function to generate a unique ID
 const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
 
 const getAllQuestions = (req, res) => {
+    const questions = db.get('questions').value();
     res.json(questions);
 };
 
 const getQuestionById = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.id));
+    const question = db.get('questions').find({ id: parseInt(req.params.id) }).value();
     if (question) {
         res.json(question);
     } else {
@@ -30,39 +28,28 @@ const createQuestion = (req, res) => {
         createdAt: new Date(),
         updatedAt: new Date(),
     };
-    questions.push(question);
-    writeQuestions(questions);
+    db.get('questions').push(question).write();
     res.status(201).json(question);
 };
 
 const updateQuestion = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.id));
-    if (question) {
-        question.title = req.body.title || question.title;
-        question.body = req.body.body || question.body;
-        question.tags = req.body.tags || question.tags;
-        question.updatedAt = new Date();
-        writeQuestions(questions);
-        res.json(question);
-    } else {
-        res.status(404).json({ message: 'Question not found' });
-    }
+    const question = db.get('questions').find({ id: parseInt(req.params.id) }).assign({
+        title: req.body.title || question.title,
+        body: req.body.body || question.body,
+        tags: req.body.tags || question.tags,
+        updatedAt: new Date(),
+    }).write();
+    res.json(question);
 };
 
 const deleteQuestion = (req, res) => {
-    const index = questions.findIndex(q => q.id === parseInt(req.params.id));
-    if (index !== -1) {
-        questions.splice(index, 1);
-        writeQuestions(questions);
-        res.status(204).send();
-    } else {
-        res.status(404).json({ message: 'Question not found' });
-    }
+    db.get('questions').remove({ id: parseInt(req.params.id) }).write();
+    res.status(204).send();
 };
 
 // Answer Management
 const addAnswer = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.id));
+    const question = db.get('questions').find({ id: parseInt(req.params.id) }).value();
     if (question) {
         const answer = {
             id: generateId(),
@@ -72,9 +59,7 @@ const addAnswer = (req, res) => {
             createdAt: new Date(),
             updatedAt: new Date(),
         };
-        question.answers.push(answer);
-        question.updatedAt = new Date();
-        writeQuestions(questions);
+        db.get('questions').find({ id: parseInt(req.params.id) }).get('answers').push(answer).write();
         res.status(201).json(answer);
     } else {
         res.status(404).json({ message: 'Question not found' });
@@ -82,42 +67,31 @@ const addAnswer = (req, res) => {
 };
 
 const updateAnswer = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.questionId));
+    const question = db.get('questions').find({ id: parseInt(req.params.questionId) }).value();
     if (question) {
-        const answer = question.answers.find(a => a.id === parseInt(req.params.answerId));
-        if (answer) {
-            answer.body = req.body.body || answer.body;
-            answer.updatedAt = new Date();
-            writeQuestions(questions);
-            res.json(answer);
-        } else {
-            res.status(404).json({ message: 'Answer not found' });
-        }
+        const answer = db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).assign({
+            body: req.body.body || answer.body,
+            updatedAt: new Date(),
+        }).write();
+        res.json(answer);
     } else {
-        res.status(404).json({ message: 'Question not found' });
+        res.status(404).json({ message: 'Answer not found' });
     }
 };
 
 const deleteAnswer = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.questionId));
+    const question = db.get('questions').find({ id: parseInt(req.params.questionId) }).value();
     if (question) {
-        const index = question.answers.findIndex(a => a.id === parseInt(req.params.answerId));
-        if (index !== -1) {
-            question.answers.splice(index, 1);
-            question.updatedAt = new Date();
-            writeQuestions(questions);
-            res.status(204).send();
-        } else {
-            res.status(404).json({ message: 'Answer not found' });
-        }
+        db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').remove({ id: parseInt(req.params.answerId) }).write();
+        res.status(204).send();
     } else {
-        res.status(404).json({ message: 'Question not found' });
+        res.status(404).json({ message: 'Answer not found' });
     }
 };
 
 // Comment Management
 const addCommentToQuestion = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.id));
+    const question = db.get('questions').find({ id: parseInt(req.params.id) }).value();
     if (question) {
         const comment = {
             id: generateId(),
@@ -125,9 +99,7 @@ const addCommentToQuestion = (req, res) => {
             createdAt: new Date(),
             updatedAt: new Date(),
         };
-        question.comments.push(comment);
-        question.updatedAt = new Date();
-        writeQuestions(questions);
+        db.get('questions').find({ id: parseInt(req.params.id) }).get('comments').push(comment).write();
         res.status(201).json(comment);
     } else {
         res.status(404).json({ message: 'Question not found' });
@@ -135,9 +107,9 @@ const addCommentToQuestion = (req, res) => {
 };
 
 const addCommentToAnswer = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.questionId));
+    const question = db.get('questions').find({ id: parseInt(req.params.questionId) }).value();
     if (question) {
-        const answer = question.answers.find(a => a.id === parseInt(req.params.answerId));
+        const answer = db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).value();
         if (answer) {
             const comment = {
                 id: generateId(),
@@ -145,9 +117,7 @@ const addCommentToAnswer = (req, res) => {
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
-            answer.comments.push(comment);
-            answer.updatedAt = new Date();
-            writeQuestions(questions);
+            db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).get('comments').push(comment).write();
             res.status(201).json(comment);
         } else {
             res.status(404).json({ message: 'Answer not found' });
@@ -158,76 +128,53 @@ const addCommentToAnswer = (req, res) => {
 };
 
 const updateComment = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.questionId));
+    const question = db.get('questions').find({ id: parseInt(req.params.questionId) }).value();
     if (question) {
-        const comment = question.comments.find(c => c.id === parseInt(req.params.commentId));
-        if (comment) {
-            comment.body = req.body.body || comment.body;
-            comment.updatedAt = new Date();
-            writeQuestions(questions);
+        const comment = db.get('questions').find({ id: parseInt(req.params.questionId) }).get('comments').find({ id: parseInt(req.params.commentId) }).assign({
+            body: req.body.body || comment.body,
+            updatedAt: new Date(),
+        }).write();
+        res.json(comment);
+    } else {
+        const answer = db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).value();
+        if (answer) {
+            const comment = db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).get('comments').find({ id: parseInt(req.params.commentId) }).assign({
+                body: req.body.body || comment.body,
+                updatedAt: new Date(),
+            }).write();
             res.json(comment);
         } else {
-            const answer = question.answers.find(a => a.id === parseInt(req.params.answerId));
-            if (answer) {
-                const comment = answer.comments.find(c => c.id === parseInt(req.params.commentId));
-                if (comment) {
-                    comment.body = req.body.body || comment.body;
-                    comment.updatedAt = new Date();
-                    writeQuestions(questions);
-                    res.json(comment);
-                } else {
-                    res.status(404).json({ message: 'Comment not found' });
-                }
-            } else {
-                res.status(404).json({ message: 'Answer not found' });
-            }
+            res.status(404).json({ message: 'Comment not found' });
         }
-    } else {
-        res.status(404).json({ message: 'Question not found' });
     }
 };
 
 const deleteComment = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.questionId));
+    const question = db.get('questions').find({ id: parseInt(req.params.questionId) }).value();
     if (question) {
-        const index = question.comments.findIndex(c => c.id === parseInt(req.params.commentId));
-        if (index !== -1) {
-            question.comments.splice(index, 1);
-            question.updatedAt = new Date();
-            writeQuestions(questions);
+        db.get('questions').find({ id: parseInt(req.params.questionId) }).get('comments').remove({ id: parseInt(req.params.commentId) }).write();
+        res.status(204).send();
+    } else {
+        const answer = db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).value();
+        if (answer) {
+            db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).get('comments').remove({ id: parseInt(req.params.commentId) }).write();
             res.status(204).send();
         } else {
-            const answer = question.answers.find(a => a.id === parseInt(req.params.answerId));
-            if (answer) {
-                const index = answer.comments.findIndex(c => c.id === parseInt(req.params.commentId));
-                if (index !== -1) {
-                    answer.comments.splice(index, 1);
-                    answer.updatedAt = new Date();
-                    writeQuestions(questions);
-                    res.status(204).send();
-                } else {
-                    res.status(404).json({ message: 'Comment not found' });
-                }
-            } else {
-                res.status(404).json({ message: 'Answer not found' });
-            }
+            res.status(404).json({ message: 'Comment not found' });
         }
-    } else {
-        res.status(404).json({ message: 'Question not found' });
     }
 };
 
 // Voting System
 const voteQuestion = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.id));
+    const question = db.get('questions').find({ id: parseInt(req.params.id) }).value();
     if (question) {
         const voteType = req.body.vote;
         if (voteType === 'upvote') {
-            question.votes += 1;
+            db.get('questions').find({ id: parseInt(req.params.id) }).update('votes', n => n + 1).write();
         } else if (voteType === 'downvote') {
-            question.votes -= 1;
+            db.get('questions').find({ id: parseInt(req.params.id) }).update('votes', n => n - 1).write();
         }
-        writeQuestions(questions);
         res.json(question);
     } else {
         res.status(404).json({ message: 'Question not found' });
@@ -235,17 +182,16 @@ const voteQuestion = (req, res) => {
 };
 
 const voteAnswer = (req, res) => {
-    const question = questions.find(q => q.id === parseInt(req.params.questionId));
+    const question = db.get('questions').find({ id: parseInt(req.params.questionId) }).value();
     if (question) {
-        const answer = question.answers.find(a => a.id === parseInt(req.params.answerId));
+        const answer = db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).value();
         if (answer) {
             const voteType = req.body.vote;
             if (voteType === 'upvote') {
-                answer.votes += 1;
+                db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).update('votes', n => n + 1).write();
             } else if (voteType === 'downvote') {
-                answer.votes -= 1;
+                db.get('questions').find({ id: parseInt(req.params.questionId) }).get('answers').find({ id: parseInt(req.params.answerId) }).update('votes', n => n - 1).write();
             }
-            writeQuestions(questions);
             res.json(answer);
         } else {
             res.status(404).json({ message: 'Answer not found' });
