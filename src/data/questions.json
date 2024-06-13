@@ -1,14 +1,107 @@
 [
   {
-    "id": 2,
-    "title": "How to edit",
-    "body": "I don't get it",
+    "id": 1718269924984,
+    "title": "TEST 3: SAMPLE QUESTION",
+    "body": "Sample Body",
     "tags": [
       "Reactjs",
       "Next"
     ],
+    "answers": [],
+    "comments": [],
     "votes": 0,
-    "createdAt": "2024-06-13T08:48:47.120Z",
-    "updatedAt": "2024-06-13T08:49:39.073Z"
+    "createdAt": "2024-06-13T09:12:04.640Z",
+    "updatedAt": "2024-06-13T09:12:04.640Z"
+  },
+  {
+    "id": 1718269931767,
+    "title": "TEST 4: SAMPLE QUESTION",
+    "body": "Sample Body",
+    "tags": [
+      "Reactjs",
+      "Next"
+    ],
+    "answers": [],
+    "comments": [],
+    "votes": 0,
+    "createdAt": "2024-06-13T09:12:10.847Z",
+    "updatedAt": "2024-06-13T09:12:10.847Z"
+  },
+  {
+    "id": 1718271065110,
+    "title": "How to test a REST API?",
+    "body": "I want to test my REST API using Postman.",
+    "tags": [
+      "testing",
+      "API",
+      "Postman"
+    ],
+    "answers": [],
+    "comments": [],
+    "votes": 0,
+    "createdAt": "2024-06-13T09:31:05.052Z",
+    "updatedAt": "2024-06-13T09:31:05.052Z"
+  },
+  {
+    "id": 1718271070347,
+    "title": "How to test a REST API?",
+    "body": "I want to test my REST API using Postman.",
+    "tags": [
+      "testing",
+      "API",
+      "Postman"
+    ],
+    "answers": [],
+    "comments": [],
+    "votes": 0,
+    "createdAt": "2024-06-13T09:31:09.497Z",
+    "updatedAt": "2024-06-13T09:31:09.497Z"
+  },
+  {
+    "id": 1718271071934,
+    "title": "How to test a REST API (Updated)?",
+    "body": "EDIIIIIIIIIIIIIITI want to test my REST API using Postman and curl.",
+    "tags": [
+      "testing",
+      "API",
+      "Postman",
+      "curl"
+    ],
+    "answers": [
+      {
+        "id": 1718271281443,
+        "body": "You can use Postman to send HTTP requests and verify the responses.",
+        "comments": [
+          {
+            "id": 1718271420613,
+            "body": "Great answer!",
+            "createdAt": "2024-06-13T09:36:59.765Z",
+            "updatedAt": "2024-06-13T09:36:59.765Z"
+          }
+        ],
+        "votes": 2,
+        "createdAt": "2024-06-13T09:34:41.279Z",
+        "updatedAt": "2024-06-13T09:36:59.765Z"
+      },
+      {
+        "id": 1718272432798,
+        "body": "You can use Postman to send HTTP requests and verify the responses.",
+        "comments": [],
+        "votes": 1,
+        "createdAt": "2024-06-13T09:53:52.449Z",
+        "updatedAt": "2024-06-13T09:53:52.449Z"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1718271357721,
+        "body": "This is an updated comment.",
+        "createdAt": "2024-06-13T09:35:56.756Z",
+        "updatedAt": "2024-06-13T09:39:50.582Z"
+      }
+    ],
+    "votes": 3,
+    "createdAt": "2024-06-13T09:31:11.065Z",
+    "updatedAt": "2024-06-13T09:53:52.449Z"
   }
 ]
